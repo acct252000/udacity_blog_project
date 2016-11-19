@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<a href="/blog" class="nav-link">Return to main blog</a>
+<br><br>
+{{no_comments}}
+
+  {% for c in comments %}
+    {{ c.render() | safe }}
+    <br>
+
+
+
+   {% if userid == c.created_by %}
+    <a class="post-link" href="{{'/blog/%s/editcomment/%s'%(postid, c.key().id())}}">Edit</a> 
+     <a class="post-link" href="{{'/blog/%s/deletecomment/%s'%(postid, c.key().id())}}">Delete</a> 
+      
+   {% endif %}
+
+     
+   <br><br>
+  {% endfor %}
+
+{% endblock %}

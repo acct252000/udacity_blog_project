@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Are you sure you want to delete this post?</h2><br><br>
+   <a href="/blog" class="nav-link">Cancel and return to main blog</a><br><br>
+
+    <form method="post">
+      <label>
+        <div>subject</div>
+        <input type="text" name="subject" value="{{subject}}" disabled>
+      </label>
+
+      <label>
+        <div>blog</div>
+        <textarea name="content" disabled>{{content}}</textarea>
+      </label>
+
+      <div class="error">{{error}}</div>
+
+      <input type="submit" Value="Yes">
+    </form>
+{% endblock %}

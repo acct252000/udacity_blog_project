@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>This is the post you just made or edited!</h1>
+
+  {{post.render() | safe}}
+{% endblock %}

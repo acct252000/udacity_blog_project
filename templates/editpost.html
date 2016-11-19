@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Edit Post</h2>
+  <a href="/blog" class="nav-link">Cancel and return to main blog</a><br><br>
+  <a href="{{'/blog/edit/%s'%postid}}" class="nav-link">Restore original post</a><br><br>
+
+
+    <form method="post">
+      <label>
+        <div>subject</div>
+        <input type="text" name="subject" value="{{subject}}">
+      </label>
+
+      <label>
+        <div>blog</div>
+        <textarea name="content">{{content}}</textarea>
+      </label>
+
+      <div class="error">{{error}}</div>
+
+      <input type="submit">
+    </form>
+{% endblock %}

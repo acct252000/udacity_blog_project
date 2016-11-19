@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+ <a href="/blog/newpost" class="nav-link">New Post</a>
+<br>
+<br>
+  {% for p in posts %}
+    {{ p.render() | safe }}
+    <br>
+
+
+  {% if userid != -1 %}
+   {% if userid == p.created_by %}
+    <div class="post-padding"><a class="post-link" href="{{'/blog/edit/%s'%p.key().id()}}">Edit</a></div>
+     <div class="post-padding"><a class="post-link" href="{{'/blog/delete/%s'%p.key().id()}}">Delete</a> </div>
+      
+   {% endif %}
+      <form method="post"><input type="hidden" name="like" value="{{p.key().id()}}"><input class="post-link" type="submit" value="Like"></form>
+      <form method="post"><input type="hidden" name="dislike" value="{{p.key().id()}}"><input class="post-link" type="submit" value="Dislike"></form>
+      <div class="post-padding"><a class="post-link" href="{{'/blog/comment/%s'%p.key().id()}}">Add Comment</a> <br></div>
+     {% endif %}
+      <a class="post-link" href="{{'/blog/readcomments/%s'%p.key().id()}}">Read Comments</a> 
+   <br><br>
+  {% endfor %}
+
+{% endblock %}

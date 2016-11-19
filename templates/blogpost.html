@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Blog</title>
+		<link type="text/css" rel="stylesheet" href="/css/style.css">
+	</head>
+
+	<body>
+	<h1>This is the blog page!</h1>
+
+	{% for blog in blogs %}
+		<hr>
+		<div class="blog">
+			<div class="blog-title">{{blog.subject}}</div>
+			<div class="blog-date">{{blog.postdate}}</div>
+			<hr>
+			<pre class="blog-body">{{blog.content}}</pre>
+		</div>
+	{% endfor %}
+
+
+
+	</body>
+</html>
