@@ -4,7 +4,7 @@ This web page provides a blog with the ability to enter, edit and delete one's o
 
 ### Installation, or How To Run
 
-Access the publicly available website [here]().  Make posts,comments, and likes as necessary.
+Access the publicly available website [here](https://udacity-full-stack-144902.appspot.com).  Make posts,comments, and likes as necessary.
 
 ### Attribution
 
