@@ -8,7 +8,7 @@ Access the publicly available website [here](https://udacity-full-stack-144902.a
 
 ### Attribution
 
-The main structure of the supporting script and html of course is based on the [Udacity](www.udacity.com) course Intro to Backend.
+The main structure of the supporting script and html of course is based on the [Udacity](http://www.udacity.com) course Intro to Backend.
 
 Help was also obtained from the following resources:
 
