@@ -34,12 +34,12 @@ import jinja2
 
 from google.appengine.ext import db
 
-# establish jinja environment
+# Establish jinja environment
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                                autoescape = True)
 
-# set secret
+# Set secret
 secret = 'sekrjeathwjkg522874295467856087dsj'
 
 
@@ -47,108 +47,109 @@ def render_str(template, **params):
     t = jinja_env.get_template(template)
     return t.render(params)
 
-# encode val for cookie
+# Encode val for cookie
 def make_secure_val(val):
     return '%s|%s' % (val, hmac.new(secret, val).hexdigest())
 
-# check encoding of val from cookie
+# Check encoding of val from cookie
 def check_secure_val(secure_val):
     val = secure_val.split('|')[0]
     if secure_val == make_secure_val(val):
         return val
 
-# define functions to be used throughout blog
+# Define functions to be used throughout blog
 class BlogHandler(webapp2.RequestHandler):
 
-    # set write function for template
+    # Set write function for template
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
-    # add user to params
+    # Add user to params
     def render_str(self, template, **params):
         params['user'] = self.user
         return render_str(template, **params)
 
-    # set rendering of template with key word arguments   
+    # Set rendering of template with key word arguments   
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
-    # function to set a cookie securely
+    # Function to set a cookie securely
     def set_secure_cookie(self, name, val):
         cookie_val = make_secure_val(val)
         self.response.headers.add_header(
             'Set-Cookie',
             '%s=%s; Path=/' % (name, cookie_val))
 
-    # check for accuracy of cookie information
+    # Check for accuracy of cookie information
     def read_secure_cookie(self, name):
         cookie_val = self.request.cookies.get(name)
         return cookie_val and check_secure_val(cookie_val)
 
-    # securely set userid in cookie
+    # Securely set userid in cookie
     def login(self, user):
         self.set_secure_cookie('user_id', str(user.key().id()))
 
-    # clear secure cookie upon logout.
+    # Clear secure cookie upon logout.
     def logout(self):
         self.response.headers.add_header('Set-Cookie', 'user_id=; Path=/')
 
-    # read user from cookie and set
+    # Read user from cookie and set
     def initialize(self, *a, **kw):
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
 
-# function to render post in templates
+# Function to render post in templates
 def render_post(response, post):
     response.out.write('<b>' + post.subject + '</b><br>')
     response.out.write(post.content)
 
-#set functions for main page functionality
+# Set functions for main page functionality
 class MainPage(BlogHandler):
   def get(self):
         self.redirect('/blog')
     
 ##### user stuff
-# make a random salt
+
+# Make a random salt
 def make_salt(length = 5):
     return ''.join(random.choice(letters) for x in xrange(length))
 
-# hash the password with salt if not yet determined
+# Hash the password with salt if not yet determined
 def make_pw_hash(name, pw, salt = None):
     if not salt:
         salt = make_salt()
     h = hashlib.sha256(name + pw + salt).hexdigest()
     return '%s,%s' % (salt, h)
 
-# check for validity of password
+# Check for validity of password
 def valid_pw(name, password, h):
     salt = h.split(',')[0]
     return h == make_pw_hash(name, password, salt)
 
-# return users key from given group
+# Return users key from given group
 def users_key(group = 'default'):
     return db.Key.from_path('users', group)
 
-# set up model to track users
+# Set up model to track users
 class User(db.Model):
     name = db.StringProperty(required = True)
     pw_hash = db.StringProperty(required = True)
     email = db.StringProperty()
 
-    # return User from id argument
+    # Return User from id argument
     @classmethod
     def by_id(cls, uid):
         return User.get_by_id(uid, parent = users_key())
 
-    # return user when filtered by name argument
+    # Return user when filtered by name argument
     @classmethod
     def by_name(cls, name):
         u = User.all().filter('name =', name).get()
         return u
 
-    # register user by hashing password and returning user object with
-    # password hash
+    # Register user by hashing password and returning user object with
+    # Password hash
     @classmethod
     def register(cls, name, pw, email = None):
         pw_hash = make_pw_hash(name, pw)
@@ -157,7 +158,7 @@ class User(db.Model):
                     pw_hash = pw_hash,
                     email = email)
 
-    #check user for valid password
+    # Check user for valid password
     @classmethod
     def login(cls, name, pw):
         u = cls.by_name(name)
@@ -169,14 +170,14 @@ class User(db.Model):
 
 ##### blog_key -> Post -> Comment
 
-# return blog key
+# Return blog key
 def blog_key(name = 'default'):
     return db.Key.from_path('blogs', name)
 
 #### post stuff
 
-# defines Post class ancestor is blog key
-# used to capture blog posts
+# Defines Post class ancestor is blog key
+# Used to capture blog posts
 class Post(db.Model):
     subject = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
@@ -253,6 +254,7 @@ class BlogFront(BlogHandler):
     def post(self):
         if self.user:
             userid = self.user.key().id()
+            # Checks if like button pushed
             if self.request.get('like'):
                 post_id = self.request.get('like')
                 key = db.Key.from_path('Post', int(post_id), parent=blog_key())
@@ -260,10 +262,12 @@ class BlogFront(BlogHandler):
                 if not post:
                     self.error(404)
                     return
+                # Checks if user has liked before
                 if post.has_user_liked(userid):
                     error = "Sorry, you have already liked this post."
                     self.render("error.html", error=error)
                     return
+                # Checks if users' post
                 if userid == post.created_by:
                     error = "Sorry, you cannot like your own post."
                     self.render("error.html", error=error)
@@ -272,6 +276,7 @@ class BlogFront(BlogHandler):
                     post.add_like(userid)
                     self.redirect('/blog')
                     return
+            # Checks if dislike button pushed
             elif self.request.get('dislike'):
                 post_id = self.request.get('dislike')
                 key = db.Key.from_path('Post', int(post_id), parent=blog_key())
@@ -279,6 +284,7 @@ class BlogFront(BlogHandler):
                 if not post:
                     self.error(404)
                     return
+                # Checks if user has liked previously
                 if post.has_user_liked(userid):
                     post.add_dislike(userid)
                     self.redirect('/blog')
